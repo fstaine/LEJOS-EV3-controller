@@ -17,17 +17,23 @@ public class RobotController implements AutoCloseable {
 	
 	SampleProvider distanceSampleProvider;
 	int accINT, accEXT, vitINT, vitEXT;
+	private float rotationAngle = (float) Math.PI / 6f;
 	
 	public RobotController() {
 //		left.setAcceleration(1000);
 //		right.setAcceleration(1000);
 //		left.setSpeed(300);
 //		right.setSpeed(300);
+
+//		accINT = 1000;
+//		accEXT = 150;
+//		vitINT = 400;
+//		vitEXT = 50;
 		
+		accEXT = 1500;
 		accINT = 1000;
-		accEXT = 200;
-		vitINT = 400;
-		vitEXT = 50;
+		vitEXT = 700;
+		vitINT = 50;
 	}
 	
 	public void enableDist() {
@@ -56,21 +62,27 @@ public class RobotController implements AutoCloseable {
 		right.forward();
 	}
 
-	public void left() {
-		left.setAcceleration(accINT);
+	public void left() {		
 		right.setAcceleration(accEXT);
-		left.setSpeed(vitINT);
 		right.setSpeed(vitEXT);
 		right.backward();
-		left.backward();
+		
+		left.setAcceleration(accINT);
+		left.stop(true);
+//		left.setAcceleration(accINT);
+//		left.setSpeed(vitINT);
+//		left.backward();
 	}
 
-	public void right() {
+	public void right() {		
+//		right.setAcceleration(accINT);
+//		right.setSpeed(vitINT);
+//		right.backward();
 		right.setAcceleration(accINT);
-		left.setAcceleration(accEXT);
-		right.setSpeed(vitINT);
+		right.stop(true);
+		
 		left.setSpeed(vitEXT);
-		right.backward();
+		left.setAcceleration(accEXT);
 		left.backward();
 	}
 	
