@@ -5,15 +5,14 @@ import lejos.hardware.Button;
 import lejos.robotics.Color;
 import lejos.utility.Delay;
 
-public class LineFollower {
-
+public class LineFollower implements AutoCloseable {
+	
 	RobotController ev3 = new RobotController();
 	
 	private float rotationAngle = (float) Math.PI / 12f;
 	
 	public void start2() {
 		while(true) {
-			
 			ev3.forward();
 			while (isOnLine()) {}
 			
@@ -73,5 +72,11 @@ public class LineFollower {
 	
 	public void shutdown() {
 		ev3.shutdown();
+	}
+	
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		ev3.close();
 	}
 }

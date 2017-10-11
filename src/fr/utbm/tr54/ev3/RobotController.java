@@ -5,11 +5,10 @@ import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.robotics.Color;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 
-public class RobotController {
+public class RobotController implements AutoCloseable {
 	EV3LargeRegulatedMotor left = new EV3LargeRegulatedMotor(MotorPort.B);
 	EV3LargeRegulatedMotor right = new EV3LargeRegulatedMotor(MotorPort.C);
 	
@@ -17,12 +16,18 @@ public class RobotController {
 	EV3ColorSensor color = new EV3ColorSensor(SensorPort.S3);
 	
 	SampleProvider distanceSampleProvider;
+	int accINT, accEXT, vitINT, vitEXT;
 	
 	public RobotController() {
-		left.setAcceleration(1000);
-		right.setAcceleration(1000);
-		left.setSpeed(300);
-		right.setSpeed(300);
+//		left.setAcceleration(1000);
+//		right.setAcceleration(1000);
+//		left.setSpeed(300);
+//		right.setSpeed(300);
+		
+		accINT = 1000;
+		accEXT = 200;
+		vitINT = 400;
+		vitEXT = 50;
 	}
 	
 	public void enableDist() {
@@ -38,8 +43,8 @@ public class RobotController {
 	 */
 	public void forward() {
 
-		left.forward();
-		right.forward();
+		left.backward();
+		right.backward();
 	}
 	
 	/**
@@ -47,8 +52,26 @@ public class RobotController {
 	 */
 	public void backward() {
 
-		left.backward();
+		left.forward();
+		right.forward();
+	}
+
+	public void left() {
+		left.setAcceleration(accINT);
+		right.setAcceleration(accEXT);
+		left.setSpeed(vitINT);
+		right.setSpeed(vitEXT);
 		right.backward();
+		left.backward();
+	}
+
+	public void right() {
+		right.setAcceleration(accINT);
+		left.setAcceleration(accEXT);
+		right.setSpeed(vitINT);
+		left.setSpeed(vitEXT);
+		right.backward();
+		left.backward();
 	}
 	
 	/**
@@ -57,8 +80,8 @@ public class RobotController {
 	 */
 	public void rotate(float rad, boolean immediate_return) {
 		float rotation_factor = 2; 
-		left.rotate(toDeg(-rad * rotation_factor), true);
-		right.rotate(toDeg(rad * rotation_factor), immediate_return);
+		left.rotate(toDeg(rad * rotation_factor), true);
+		right.rotate(toDeg(-rad * rotation_factor), immediate_return);
 	}
 	
 	/**
@@ -126,5 +149,14 @@ public class RobotController {
 			res += f;
 		}
 		return res / vals.length;
+	}
+
+	@Override
+	public void close() {
+		dist.close();
+		color.close();
+		stop();
+		System.out.println("Close");
+		Delay.msDelay(1000);
 	}
 }
