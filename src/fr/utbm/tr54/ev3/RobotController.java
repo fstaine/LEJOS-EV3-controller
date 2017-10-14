@@ -25,14 +25,14 @@ public class RobotController implements AutoCloseable {
 //		left.setSpeed(300);
 //		right.setSpeed(300);
 
-//		accINT = 1000;
-//		accEXT = 150;
-//		vitINT = 400;
-//		vitEXT = 50;
+//		accEXT = 3000;
+//		accINT = 1500;
+//		vitEXT = 500;
+//		vitINT = 50;
 		
-		accEXT = 1500;
-		accINT = 1000;
-		vitEXT = 700;
+		accEXT = 4000;
+		accINT = 2000;
+		vitEXT = 500;
 		vitINT = 50;
 	}
 	
@@ -62,24 +62,59 @@ public class RobotController implements AutoCloseable {
 		right.forward();
 	}
 
-	public void left() {		
+	public void left(int flag) {
+		
+		if (flag>=70){
+			accEXT = 7000;
+			accINT = 2000;
+			vitEXT = 800;
+			vitINT = 5;
+			left.setSpeed(vitINT);
+			System.out.println("flagLEFT="+flag);
+		}
+		
+		else{			
+			accEXT = 4000;
+			accINT = 2000;
+			vitEXT = 500;
+			vitINT = 50;
+			left.setSpeed(vitINT);
+			left.backward();
+		}
+		
 		right.setAcceleration(accEXT);
 		right.setSpeed(vitEXT);
 		right.backward();
 		
 		left.setAcceleration(accINT);
-		left.stop(true);
-//		left.setAcceleration(accINT);
-//		left.setSpeed(vitINT);
-//		left.backward();
+		left.backward();
 	}
 
-	public void right() {		
+	public void right(int flag) {		
 //		right.setAcceleration(accINT);
 //		right.setSpeed(vitINT);
 //		right.backward();
+		
+		if (flag>=70){
+			accEXT = 7000;
+			accINT = 2000;
+			vitEXT = 800;
+			vitINT = 5;
+			right.setSpeed(vitINT);
+			System.out.println("flagRIGHT="+flag);
+		}
+		
+		else{			
+			accEXT = 4000;
+			accINT = 2000;
+			vitEXT = 500;
+			vitINT = 50;
+			right.setSpeed(vitINT);
+			right.backward();
+		}
+		
 		right.setAcceleration(accINT);
-		right.stop(true);
+		right.backward();
 		
 		left.setSpeed(vitEXT);
 		left.setAcceleration(accEXT);
@@ -135,7 +170,7 @@ public class RobotController implements AutoCloseable {
 	
 	public int getColor() {
 		int c = color.getColorID();
-		System.out.println(c);
+		//System.out.println(c);
 		return c;
 	}
 	
@@ -170,5 +205,6 @@ public class RobotController implements AutoCloseable {
 		stop();
 		System.out.println("Close");
 		Delay.msDelay(1000);
+		System.err.println("CLOSE");
 	}
 }
