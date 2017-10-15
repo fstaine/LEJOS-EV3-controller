@@ -6,7 +6,6 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
-import lejos.utility.Delay;
 
 public class RobotController implements AutoCloseable {
 	EV3LargeRegulatedMotor left = new EV3LargeRegulatedMotor(MotorPort.B);
@@ -16,32 +15,8 @@ public class RobotController implements AutoCloseable {
 	EV3ColorSensor color = new EV3ColorSensor(SensorPort.S3);
 	
 	SampleProvider distanceSampleProvider;
-	int accINT, accEXT, vitINT, vitEXT;
-	private float rotationAngle = (float) Math.PI / 6f;
 	
 	public RobotController() {
-//		left.setAcceleration(1000);
-//		right.setAcceleration(1000);
-//		left.setSpeed(300);
-//		right.setSpeed(300);
-
-//		accEXT = 3000;
-//		accINT = 1500;
-//		vitEXT = 500;
-//		vitINT = 50;
-		
-		accEXT = 4000;
-		accINT = 2000;
-		vitEXT = 500;
-		vitINT = 50;
-	}
-	
-	public void enableDist() {
-		dist.enable();
-	}
-	
-	public void disableDist() {
-		dist.disable();
 	}
 	
 	/**
@@ -62,7 +37,13 @@ public class RobotController implements AutoCloseable {
 		right.forward();
 	}
 
+	/**
+	 * Move to the left.
+	 * If flag value is big enough, set an important max speed for the left engine
+	 * @param flag to check if the robot should have a higher speed
+	 */
 	public void left(int flag) {
+		int accINT, accEXT, vitINT, vitEXT;
 		
 		if (flag>=70){
 			accEXT = 7000;
@@ -70,16 +51,13 @@ public class RobotController implements AutoCloseable {
 			vitEXT = 800;
 			vitINT = 5;
 			left.setSpeed(vitINT);
-			System.out.println("flagLEFT="+flag);
-		}
-		
-		else{			
+//			System.out.println("flagLEFT="+flag);
+		} else {			
 			accEXT = 4000;
 			accINT = 2000;
 			vitEXT = 500;
 			vitINT = 50;
 			left.setSpeed(vitINT);
-			left.backward();
 		}
 		
 		right.setAcceleration(accEXT);
@@ -90,10 +68,13 @@ public class RobotController implements AutoCloseable {
 		left.backward();
 	}
 
-	public void right(int flag) {		
-//		right.setAcceleration(accINT);
-//		right.setSpeed(vitINT);
-//		right.backward();
+	/**
+	 * Move to the right.
+	 * If flag value is big enough, set an important max speed for the right engine
+	 * @param flag to check if the robot should have a higher speed
+	 */
+	public void right(int flag) {
+		int accINT, accEXT, vitINT, vitEXT;
 		
 		if (flag>=70){
 			accEXT = 7000;
@@ -101,16 +82,13 @@ public class RobotController implements AutoCloseable {
 			vitEXT = 800;
 			vitINT = 5;
 			right.setSpeed(vitINT);
-			System.out.println("flagRIGHT="+flag);
-		}
-		
-		else{			
+//			System.out.println("flagRIGHT="+flag);
+		} else {			
 			accEXT = 4000;
 			accINT = 2000;
 			vitEXT = 500;
 			vitINT = 50;
 			right.setSpeed(vitINT);
-			right.backward();
 		}
 		
 		right.setAcceleration(accINT);
@@ -122,9 +100,13 @@ public class RobotController implements AutoCloseable {
 	}
 	
 	/**
-	 * Rotate the robot according to a certain angle
+	 * Rotate the robot according to a certain angle.
+	 * Should not be used since rotation isn't always correct,
+	 * depending of the requested angle
 	 * @param rad angle to rotate in rad
+     * @param immediate_return if true do not wait for the move to complete
 	 */
+	@Deprecated
 	public void rotate(float rad, boolean immediate_return) {
 		float rotation_factor = 2; 
 		left.rotate(toDeg(rad * rotation_factor), true);
@@ -135,6 +117,7 @@ public class RobotController implements AutoCloseable {
 	 * Rotate the robot accoring to a certain angle, returns at the end of the rotation
 	 * @param rad angle to rotate in rad
 	 */
+	@Deprecated
 	public void rotate(float rad) {
 		rotate(rad, false);
 	}
@@ -147,12 +130,36 @@ public class RobotController implements AutoCloseable {
 		right.stop();
 	}
 	
+	/**
+	 * Enable distance sensor
+	 */
+	public void enableDist() {
+		dist.enable();
+	}
+	
+	/**
+	 * Disable distance sensor
+	 */
+	public void disableDist() {
+		dist.disable();
+	}
+	
+	/**
+	 * Get the current distance between the sensor and 
+	 * the closest object in line of sight
+	 * @return the distance in meter to the wall
+	 */
 	public float distance() {
 		float sample[] = new float[1];
 		dist.getDistanceMode().fetchSample(sample, 0);
 		return sample[0];
 	}
 	
+	/**
+	 * Get the mean over n samples of the distance
+	 * @param n
+	 * @return
+	 */
 	public float distance(int n) {
 		float sample[] = new float[n];
 		if (distanceSampleProvider == null) {
@@ -168,16 +175,14 @@ public class RobotController implements AutoCloseable {
 		return mean(sample);
 	}
 	
+	/**
+	 * Get the current color under the sensor
+	 * @return an int representing the detected color
+	 */
 	public int getColor() {
 		int c = color.getColorID();
 		//System.out.println(c);
 		return c;
-	}
-	
-	public void shutdown() {
-		dist.close();
-		color.close();
-		stop();
 	}
 	
 	/**
@@ -185,14 +190,18 @@ public class RobotController implements AutoCloseable {
 	 * @param rad angle in rad
 	 * @return angle in deg
 	 */
-	private int toDeg(float rad) {
+	private static int toDeg(float rad) {
 		return (int) (rad * 360 / (2*Math.PI));
 	}
 	
-	private float mean(float vals[]) {
+	/**
+	 * Get the mean of the values given in parameter
+	 * @param vals the values to be averaged
+	 * @return the mean value between all the parameters
+	 */
+	private static float mean(float... vals) {
 		float res = 0;
 		for (float f : vals) {
-			System.out.println(f);
 			res += f;
 		}
 		return res / vals.length;
@@ -203,8 +212,5 @@ public class RobotController implements AutoCloseable {
 		dist.close();
 		color.close();
 		stop();
-		System.out.println("Close");
-		Delay.msDelay(1000);
-		System.err.println("CLOSE");
 	}
 }

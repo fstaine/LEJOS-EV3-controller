@@ -1,17 +1,19 @@
 package fr.utbm.tr54.ia;
 
 import fr.utbm.tr54.ev3.RobotController;
-import lejos.hardware.Button;
 import lejos.robotics.Color;
-import lejos.utility.Delay;
 
 public class LineFollower implements AutoCloseable {
 	
 	RobotController ev3 = new RobotController();
 	
 	private float rotationAngle = (float) Math.PI / 12f;
-	
-	public void start2() {
+
+	/**
+	 * Start the robot:
+	 * Make the robot following the line indeffinately
+	 */
+	public void start() {
 		while(true) {
 			ev3.forward();
 			while (isOnLine()) {}
@@ -35,6 +37,9 @@ public class LineFollower implements AutoCloseable {
 		}
 	}
 	
+	/**
+	 * Make the robot going backward until it reaches the line to follow
+	 */
 	public void backward(){
 		ev3.backward();
 
@@ -43,40 +48,33 @@ public class LineFollower implements AutoCloseable {
 		ev3.stop();
 	}
 	
+	/**
+	 * Turn right and then left and check if the robot in on the line afterward
+	 * @param val the rotation factor
+	 * @return true if on the line after the rotation, false otherwise
+	 */
 	public boolean serachLine(float val){
 		ev3.rotate(val * rotationAngle);
 		if (isOnLine()) 
 			return true;
 
-		ev3.rotate(-4f*val * rotationAngle);
+		ev3.rotate(-2f*val * rotationAngle);
 		if (isOnLine()) 
 			return true;
 		
 		return false;
 	}
-	
-	public void start() {
-		while(Button.readButtons() != 0) {
-			ev3.forward();
-			while (isOnLine()) {
-				Delay.msDelay(10);
-			}
-			
-			ev3.stop();
-		}
-	}
-	
+
+	/**
+	 * Check if the robot is on the line to follow
+	 * @return true if the robot is on the line to follow
+	 */
 	public boolean isOnLine() {
 		return (ev3.getColor() != Color.WHITE);
 	}
 	
-	public void shutdown() {
-		ev3.shutdown();
-	}
-	
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
 		ev3.close();
 	}
 }

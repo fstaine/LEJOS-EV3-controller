@@ -9,6 +9,10 @@ public class LineFollower2 implements AutoCloseable {
 	int flagON = 0;
 	int flagOFF = 0;
 	
+	/**
+	 * Start the robot:
+	 * Make the robot following the line indeffinately
+	 */
 	public void start() {
 		while(true) {
 			if (isOnLine()) {
@@ -24,6 +28,10 @@ public class LineFollower2 implements AutoCloseable {
 		}
 	}
 	
+	/**
+	 * Check if the robot is on the line to follow
+	 * @return true if the robot is on the line to follow
+	 */
 	public boolean isOnLine() {
 		return (ev3.getColor() != Color.WHITE);
 	}
@@ -31,9 +39,5 @@ public class LineFollower2 implements AutoCloseable {
 	@Override
 	public void close() {
 		ev3.close();
-	}
-
-	public void shutdown() {
-		close();
 	}
 }
