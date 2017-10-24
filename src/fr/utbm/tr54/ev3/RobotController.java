@@ -24,8 +24,8 @@ public class RobotController implements AutoCloseable {
 	 */
 	public void forward() {
 
-		left.backward();
-		right.backward();
+		left.forward();
+		right.forward();
 	}
 	
 	/**
@@ -33,8 +33,17 @@ public class RobotController implements AutoCloseable {
 	 */
 	public void backward() {
 
-		left.forward();
-		right.forward();
+		left.backward();
+		right.backward();
+	}
+	
+	public void setSpeedRatio(float ratio) {
+		setSpeed(ratio*left.getMaxSpeed());
+	}
+	
+	public void setSpeed(float speed) {
+		left.setSpeed(speed);
+		right.setSpeed(speed);
 	}
 
 	/**
