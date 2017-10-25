@@ -45,6 +45,10 @@ public class RobotController implements AutoCloseable {
 		left.setSpeed(speed);
 		right.setSpeed(speed);
 	}
+	
+	public float getSpeed() {
+		return left.getSpeed();
+	}
 
 	/**
 	 * Move to the left.
@@ -61,7 +65,7 @@ public class RobotController implements AutoCloseable {
 			vitINT = 5;
 			left.setSpeed(vitINT);
 //			System.out.println("flagLEFT="+flag);
-		} else {			
+		} else {		
 			accEXT = 4000;
 			accINT = 2000;
 			vitEXT = 500;
