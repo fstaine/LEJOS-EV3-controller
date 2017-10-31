@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import fr.utbm.tr54.ev3.RobotController;
+import fr.utbm.tr54.ia.follower.Leader;
 
 public class Client extends Thread {
 
@@ -14,10 +14,10 @@ public class Client extends Thread {
 	
 	private volatile boolean isRunning = false;
 	
-	RobotController ev3;// = new RobotController();
+	Leader leader;
 
-	public Client(RobotController ev3, String host, int port) throws UnknownHostException, IOException {
-		this.ev3 = ev3;
+	public Client(Leader leader, String host, int port) throws UnknownHostException, IOException {
+		this.leader = leader;
 		connexion = new Socket(host, port);
 		writer = new PrintWriter(connexion.getOutputStream(), true);
 	}
@@ -26,14 +26,10 @@ public class Client extends Thread {
 		isRunning = true;
 		
 		while (isRunning) {
-			
 			// On envoie la commande au serveur
-			writer.write("" + ev3.getSpeed() + ";");
-//			writer.write("34;");
-//			System.out.println("Le relou quoi...");
-//			writer.write("Le relou quoi...;");
-			
+			writer.write("" + leader.getSpeed() + ";");
 			writer.flush();
+			
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {

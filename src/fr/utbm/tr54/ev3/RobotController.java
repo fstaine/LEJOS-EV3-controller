@@ -151,13 +151,6 @@ public class RobotController implements AutoCloseable {
 	}
 	
 	/**
-	 * Disable distance sensor
-	 */
-	public void disableDist() {
-		dist.disable();
-	}
-	
-	/**
 	 * Get the current distance between the sensor and 
 	 * the closest object in line of sight
 	 * @return the distance in meter to the wall

@@ -5,15 +5,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import fr.utbm.tr54.ev3.RobotController;
+import fr.utbm.tr54.ia.follower.NetClientFollower;
 
 public class Server extends Thread {
 	private ServerSocket server;
 	private volatile boolean isRunning = false;
-	private RobotController ev3;
+	private NetClientFollower follower;
 	
-	public Server(RobotController ev3, int port) {
-		this.ev3 = ev3;
+	public Server(NetClientFollower follower, int port) {
+		this.follower = follower;
 		try {
 			server = new ServerSocket(port);
 		} catch (UnknownHostException e) {
@@ -31,7 +31,7 @@ public class Server extends Thread {
 				Socket client = server.accept();
 
 				// Une fois reçue, on la traite dans un thread séparé
-				ClientProcessor proc = new ClientProcessor(ev3, client);
+				ClientProcessor proc = new ClientProcessor(follower, client);
 				Thread serverProcessorThread = new Thread(proc);
 				serverProcessorThread.start();
 			} catch (IOException e) {

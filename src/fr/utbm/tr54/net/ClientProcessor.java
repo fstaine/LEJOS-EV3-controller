@@ -2,21 +2,20 @@ package fr.utbm.tr54.net;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 
-import fr.utbm.tr54.ev3.RobotController;
+import fr.utbm.tr54.ia.follower.NetClientFollower;
 
 public class ClientProcessor implements Runnable {
 	
 	public final Socket sock;
 	private BufferedInputStream reader = null; // buffer de lecture
-	RobotController ev3;// = new RobotController();
+	private NetClientFollower follower;
 
 	
-	public ClientProcessor(RobotController ev3, Socket sock) {
+	public ClientProcessor(NetClientFollower follower, Socket sock) {
 		this.sock = sock;
-		this.ev3 = ev3;
+		this.follower = follower;
 		try {
 			reader = new BufferedInputStream(sock.getInputStream());
 		} catch (IOException e) {
@@ -33,10 +32,7 @@ public class ClientProcessor implements Runnable {
 				System.out.println(request);
 
 				// set speed from the leader
-				ev3.setSpeed(Float.parseFloat(request));
-//				ev3.setSpeedRatio(0.43f);
-				
-				ev3.forward();
+				follower.setLeaderSpeed(Float.parseFloat(request));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

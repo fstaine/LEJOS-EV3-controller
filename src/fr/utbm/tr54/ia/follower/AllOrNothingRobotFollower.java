@@ -19,7 +19,7 @@ public class AllOrNothingRobotFollower extends RobotFollower {
 		}
 	}
 	
-	private boolean isObstacle() {
+	protected boolean isObstacle() {
 		return ev3.distance() < 0.15f;
 	}
 }
